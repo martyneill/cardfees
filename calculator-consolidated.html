@@ -1,60 +1,107 @@
 <!DOCTYPE html>
 <html>
 <body>
+
 <h2>Card Fees Calculator</h2>
-<label for="amount">Amount (£):</label>
+
+<label for="amount">Monthly Turnover (£):</label>
 <input type="text" id="amount" name="amount">
 <br>
+
 <label for="provider">Provider:</label>
 <select id="provider" name="provider">
   <option value="sumup">Sumup</option>
   <option value="zettle">Zettle</option>
   <option value="square">Square</option>
+  <option value="worldpay">Worldpay</option>
+  <option value="dojo">Dojo</option>
+  <option value="takepayments">Takepayments</option>
+  <option value="eposnow">ePOS Now</option>
 </select>
 <br>
+
 <button onclick="calculateFee()">Calculate</button>
-<button onclick="window.location.href='upload.html'">I don't know</button>
+<button onclick="window.location.href='https://form.typeform.com/to/d5L3lXoU'">I don't know</button>
+
 <p id="result"></p>
 <p id="compare"></p>
 <p id="savings"></p>
+<p id="breakdown"></p>
+
 <script>
     // Set the fee structures for the providers.
     var providerFees = {
       "sumup": {
         "fixed": 0, // £0 fixed fee
-        "variable": 0.016 // 1.6% variable fee
+        "variable": 0.016, // 1.6% variable fee
+        "terminal": 0 // £0 terminal rental
       },
       "zettle": {
         "fixed": 0, // £0 fixed fee
-        "variable": 0.0175 // 1.75% variable fee
+        "variable": 0.0175, // 1.75% variable fee
+        "terminal": 0 // £0 terminal rental
       },
       "square": {
         "fixed": 0, // £0 fixed fee
-        "variable": 0.016 // 1.6% variable fee
+        "variable": 0.016, // 1.6% variable fee
+        "terminal": 0 // £0 terminal rental
+      },
+      "worldpay": {
+        "fixed": 0, // £0 fixed fee
+        "variable": 0.015, // 1.5% variable fee
+        "terminal": 20 // £20 terminal rental
+      },
+      "dojo": {
+        "fixed": 0, // £0 fixed fee
+        "variable": 0.015, // 1.5% variable fee
+        "terminal": 20 // £20 terminal rental
+      },
+      "takepayments": {
+        "fixed": 0, // £0 fixed fee
+        "variable": 0.015, // 1.5% variable fee
+        "terminal": 20 // £20 terminal rental
+      },
+      "eposnow": {
+        "fixed": 0, // £0 fixed fee
+        "variable": 0.015, // 1.5% variable fee
+        "terminal": 20 // £20 terminal rental
       },
       "airpos": {
         "fixed": 0.14, // 14p fixed fee
-        "variable": 0.014 // 1.4% variable fee
+        "variable": 0.014, // 1.4% variable fee
+        "terminal": 0 // £0 terminal rental
       }
     };
+
     // Calculate the fee for the selected provider and amount and compare with AirPOS Pay.
     function calculateFee() {
       var amount = document.getElementById("amount").value;
       var provider = document.getElementById("provider").value;
+
       if (amount && provider) {
         amount = parseFloat(amount);
-        var fee = providerFees[provider].fixed + (amount * providerFees[provider].variable);
-        var airposFee = providerFees["airpos"].fixed + (amount * providerFees["airpos"].variable);
-        var savings = fee - airposFee;
-        document.getElementById("result").innerHTML = "Fee with " + provider.charAt(0).toUpperCase() + provider.slice(1) + ": £" + fee.toFixed(2);
-        document.getElementById("compare").innerHTML = "Fee with AirPOS Pay: £" + airposFee.toFixed(2);
-        document.getElementById("savings").innerHTML = "You could save: £" + savings.toFixed(2) + " with AirPOS Pay.";
+        var fee = (providerFees[provider].fixed + (amount * providerFees[provider].variable)) * 12;
+        var terminalFee = providerFees[provider].terminal * 12;
+        var totalFee = fee + terminalFee;
+        
+        var airposFee = (providerFees["airpos"].fixed + (amount * providerFees["airpos"].variable)) * 12;
+        var airposTerminalFee = providerFees["airpos"].terminal * 12;
+        var totalAirposFee = airposFee + airposTerminalFee;
+        
+        var savings = totalFee - totalAirposFee;
+
+        document.getElementById("result").innerHTML = "Annual fee with " + provider.charAt(0).toUpperCase() + provider.slice(1) + ": £" + totalFee.toFixed(2);
+        document.getElementById("compare").innerHTML = "Annual fee with AirPOS Pay: £" + totalAirposFee.toFixed(2);
+        document.getElementById("savings").innerHTML = "You could save: £" + savings.toFixed(2) + " annually with AirPOS Pay.";
+        document.getElementById("breakdown").innerHTML = "Breakdown: " + provider.charAt(0).toUpperCase() + provider.slice(1) + " (fees: £" + fee.toFixed(2) + ", terminal rental: £" + terminalFee.toFixed(2) + ") vs. AirPOS Pay (fees: £" + airposFee.toFixed(2) + ", terminal rental: £" + airposTerminalFee.toFixed(2) + ")";
       } else {
         document.getElementById("result").innerHTML = "Please enter a valid amount and select a provider.";
         document.getElementById("compare").innerHTML = "";
         document.getElementById("savings").innerHTML = "";
+        document.getElementById("breakdown").innerHTML = "";
       }
     }
 </script>
+
 </body>
 </html>
