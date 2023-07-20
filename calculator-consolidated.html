@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Card Fees Calculator</h2>
+<label for="amount">Amount (£):</label>
+<input type="text" id="amount" name="amount">
+<br>
+<label for="provider">Provider:</label>
+<select id="provider" name="provider">
+  <option value="sumup">Sumup</option>
+  <option value="zettle">Zettle</option>
+  <option value="square">Square</option>
+</select>
+<br>
+<button onclick="calculateFee()">Calculate</button>
+<button onclick="window.location.href='upload.html'">I don't know</button>
+<p id="result"></p>
+<p id="compare"></p>
+<p id="savings"></p>
+<script>
+    // Set the fee structures for the providers.
+    var providerFees = {
+      "sumup": {
+        "fixed": 0, // £0 fixed fee
+        "variable": 0.016 // 1.6% variable fee
+      },
+      "zettle": {
+        "fixed": 0, // £0 fixed fee
+        "variable": 0.0175 // 1.75% variable fee
+      },
+      "square": {
+        "fixed": 0, // £0 fixed fee
+        "variable": 0.016 // 1.6% variable fee
+      },
+      "airpos": {
+        "fixed": 0.14, // 14p fixed fee
+        "variable": 0.014 // 1.4% variable fee
+      }
+    };
+    // Calculate the fee for the selected provider and amount and compare with AirPOS Pay.
+    function calculateFee() {
+      var amount = document.getElementById("amount").value;
+      var provider = document.getElementById("provider").value;
+      if (amount && provider) {
+        amount = parseFloat(amount);
+        var fee = providerFees[provider].fixed + (amount * providerFees[provider].variable);
+        var airposFee = providerFees["airpos"].fixed + (amount * providerFees["airpos"].variable);
+        var savings = fee - airposFee;
+        document.getElementById("result").innerHTML = "Fee with " + provider.charAt(0).toUpperCase() + provider.slice(1) + ": £" + fee.toFixed(2);
+        document.getElementById("compare").innerHTML = "Fee with AirPOS Pay: £" + airposFee.toFixed(2);
+        document.getElementById("savings").innerHTML = "You could save: £" + savings.toFixed(2) + " with AirPOS Pay.";
+      } else {
+        document.getElementById("result").innerHTML = "Please enter a valid amount and select a provider.";
+        document.getElementById("compare").innerHTML = "";
+        document.getElementById("savings").innerHTML = "";
+      }
+    }
+</script>
+</body>
+</html>
